@@ -92,18 +92,20 @@ void adcv(MEASURE_t cell) {
 	SPI_PORT |= (1<<pin_SS);
 	_delay_ms(1);
 }
-void readstat(const uint8_t READ[4], uint8_t* data_read) {
+void readstat( uint8_t* READ, uint8_t* data_read) {
 	
 	//SPI_SStoggle();
 	SPI_PORT &= ~(1<<pin_SS);
 
-	SPI_MasterTransfer(READ[0]); // sends CMD0 specific to the register
-	SPI_MasterTransfer(READ[1]); // sends CMD1 specific to the register
-	SPI_MasterTransfer(READ[2]); // sends PEC0 specific to the register
-	SPI_MasterTransfer(READ[3]); // sends PEC1 specific to the register
+	data_read[0]=SPI_MasterTransfer(READ[0]); // sends CMD0 specific to the register
+	data_read[1]=SPI_MasterTransfer(READ[1]); // sends CMD1 specific to the register
+	data_read[2]=SPI_MasterTransfer(READ[2]); // sends PEC0 specific to the register
+	data_read[3]=SPI_MasterTransfer(READ[3]); // sends PEC1 specific to the register
 	
 	//SPI_SStoggle();
 	//SPI_PORT |= (1<<pin_SS);
+
+
 
 	data_read[0]=SPI_MasterTransfer(0); // reads the registers in order and the PEC
 	//PORTB^=(1<<PB7);

@@ -13,8 +13,8 @@ void SPI_MasterInit(void)
 {
 	/* Set MOSI and SCK output, all others input */
 	DDR_SPI |= (1<<DD_MOSI)|(1<<DD_SCK)|(1<<pin_SS);
-	//DDR_SPI &= ~(1<<pin_MISO);
-	//SPI_PORT |= (1<<pin_MISO); //activate pull up
+	DDR_SPI &= ~(1<<pin_MISO);
+	SPI_PORT |= (1<<pin_MISO); //activate pull up
 	/* Enable SPI, Master, set clock rate fck/128 */
 	SPCR = (1<<SPR0)|(1<<SPR1)|(1<<MSTR)|(1<<SPE)|(1<<CPOL)|(1<CPHA);
 	

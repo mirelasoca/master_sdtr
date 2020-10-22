@@ -106,7 +106,7 @@ typedef enum PECFG  {
 void write_read_config(CELL_DISCHARGE_t cells, TIMEOUT_t mins , PECFG_t pec ) ;
 void adcv(MEASURE_t cell);
 void wakeup(void);
-void readstat(const uint8_t READ[4], uint8_t* data_read);
+void readstat(uint8_t *READ, uint8_t* data_read);
 unsigned int calculate_voltage( uint8_t reg1, uint8_t reg2);
 void calculate_min(void);
 

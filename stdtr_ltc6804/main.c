@@ -16,8 +16,9 @@ int main(void)
 	//SPI_MasterInit();
 	uint8_t RDCVA[4] = {CMD0_RDCVA, CMD1_RDCVA, PEC0_RDCVA, PEC1_RDCVA };
 	uint8_t RDCVC[4] = {CMD0_RDCVC, CMD1_RDCVC, PEC0_RDCVC, PEC1_RDCVC };
-	DDRB |=(1<<PB7);
+	uint16_t cells[4]= {0};
 	uint8_t data_read[8]= {0};
+	uint8_t data_read2[8]= {0};
 	char tx_message[16];
 	lcd_params my_params =
 	{
@@ -46,6 +47,7 @@ int main(void)
     {
 		
 
+
 		wakeup();
 		write_read_config(cell8, halfmin, cell8halfmin);
 		_delay_ms(1000);
@@ -59,7 +61,9 @@ int main(void)
 		wakeup();
 		write_read_config(cell7, halfmin, cell7halfmin);
 		_delay_ms(1000);
+		
 		wakeup();
+		
 		write_read_config(no_cell, disabled, nodischarge);
 		_delay_ms(1000);
 		
@@ -75,27 +79,35 @@ int main(void)
 		wakeup();
 
 		readstat(RDCVA, data_read); // read register with values for cells 1 and 2
-		vcells[cell2-1]= calculate_voltage(data_read[2], data_read[3]); // assembly the values
-		vcells[cell3-1]= calculate_voltage(data_read[4], data_read[5]);
+		cells[cell2-1]= calculate_voltage(data_read[2], data_read[3]); // assembly the values
+		cells[cell3-1]= calculate_voltage(data_read[4], data_read[5]);
 
 		_delay_ms(4);
 		wakeup();
 
-		readstat(RDCVC, data_read); // read register with values for cells 3 and 4
+		readstat(RDCVC, data_read2); // read register with values for cells 3 and 4
 
-		vcells[cell8-1]= calculate_voltage(data_read[2], data_read[3]);
-		vcells[cell7-1]= calculate_voltage(data_read[0], data_read[1]);
+		cells[cell8-1]= calculate_voltage(data_read[2], data_read[3]);
+		cells[cell7-1]= calculate_voltage(data_read[0], data_read[1]);
 		lcd_init(&my_params);
 		lcd_blink();
 		//_delay_ms(1000);
 
 
 
-		for(int i=0; i<4;i++)
+		for(int i=0; i<8;i++)
 		{
-			sprintf(tx_message, "vcell %u", vcells[i]);
+			sprintf(tx_message, "data %u is %u", i,data_read[i]);
 			lcd_write_text(tx_message,1, LCD_LINE_COUNT_1);
-			_delay_ms(1000);
+			_delay_ms(2000);
+			lcd_write_instruction(lcd_cmd_clear_display());
+			//_delay_ms(1000);
+		}
+		for(int i=8; i<16;i++)
+		{
+			sprintf(tx_message, "data %u is %u", i,data_read2[i-8]);
+			lcd_write_text(tx_message,1, LCD_LINE_COUNT_1);
+			_delay_ms(2000);
 			lcd_write_instruction(lcd_cmd_clear_display());
 			//_delay_ms(1000);
 		}
