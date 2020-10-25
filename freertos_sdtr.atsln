@@ -7,6 +7,16 @@ Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "freertos_sdtr", "freertos_s
 EndProject
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "stdtr_ltc6804", "stdtr_ltc6804\stdtr_ltc6804.cproj", "{1D9623A1-3CE9-481C-956B-0FDBC76A59A7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "generic_libs", "generic_libs", "{C4EC25D9-BA09-4C33-BE45-65DE49F93612}"
+	ProjectSection(SolutionItems) = preProject
+		generic_libs\avr_serial_com_hal.c = generic_libs\avr_serial_com_hal.c
+		generic_libs\avr_serial_com_hal.h = generic_libs\avr_serial_com_hal.h
+		generic_libs\avr_sys_tick.c = generic_libs\avr_sys_tick.c
+		generic_libs\avr_sys_tick.h = generic_libs\avr_sys_tick.h
+		generic_libs\serial_com.c = generic_libs\serial_com.c
+		generic_libs\serial_com.h = generic_libs\serial_com.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR

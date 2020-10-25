@@ -1,34 +1,60 @@
 /*
- * FreeRTOS Kernel V10.4.1
- * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * https://www.FreeRTOS.org
- * https://github.com/FreeRTOS
- *
- * 1 tab == 4 spaces!
- */
+    FreeRTOS V7.0.1 - Copyright (C) 2011 Real Time Engineers Ltd.
+	
+
+    ***************************************************************************
+     *                                                                       *
+     *    FreeRTOS tutorial books are available in pdf and paperback.        *
+     *    Complete, revised, and edited pdf reference manuals are also       *
+     *    available.                                                         *
+     *                                                                       *
+     *    Purchasing FreeRTOS documentation will not only help you, by       *
+     *    ensuring you get running as quickly as possible and with an        *
+     *    in-depth knowledge of how to use FreeRTOS, it will also help       *
+     *    the FreeRTOS project to continue with its mission of providing     *
+     *    professional grade, cross platform, de facto standard solutions    *
+     *    for microcontrollers - completely free of charge!                  *
+     *                                                                       *
+     *    >>> See http://www.FreeRTOS.org/Documentation for details. <<<     *
+     *                                                                       *
+     *    Thank you for using FreeRTOS, and thank you for your support!      *
+     *                                                                       *
+    ***************************************************************************
+
+
+    This file is part of the FreeRTOS distribution.
+
+    FreeRTOS is free software; you can redistribute it and/or modify it under
+    the terms of the GNU General Public License (version 2) as published by the
+    Free Software Foundation AND MODIFIED BY the FreeRTOS exception.
+    >>>NOTE<<< The modification to the GPL is included to allow you to
+    distribute a combined work that includes FreeRTOS without being obliged to
+    provide the source code for proprietary components outside of the FreeRTOS
+    kernel.  FreeRTOS is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+    more details. You should have received a copy of the GNU General Public
+    License and the FreeRTOS license exception along with FreeRTOS; if not it
+    can be viewed here: http://www.freertos.org/a00114.html and also obtained
+    by writing to Richard Barry, contact details for whom are available on the
+    FreeRTOS WEB site.
+
+    1 tab == 4 spaces!
+
+    http://www.FreeRTOS.org - Documentation, latest information, license and
+    contact details.
+
+    http://www.SafeRTOS.com - A version that is certified for use in safety
+    critical systems.
+
+    http://www.OpenRTOS.com - Commercial support, development, porting,
+    licensing and training services.
+*/
 
 /*
 Changes from V1.2.3
 
-	+ portCPU_CLOSK_HZ definition changed to 8MHz base 10, previously it
+	+ portCPU_CLOSK_HZ definition changed to 8MHz base 10, previously it 
 	  base 16.
 */
 
@@ -40,7 +66,7 @@ extern "C" {
 #endif
 
 /*-----------------------------------------------------------
- * Port specific definitions.
+ * Port specific definitions.  
  *
  * The settings in this file configure FreeRTOS correctly for the
  * given hardware and compiler.
@@ -55,21 +81,17 @@ extern "C" {
 #define portDOUBLE		double
 #define portLONG		long
 #define portSHORT		int
-#define portSTACK_TYPE	uint8_t
+#define portSTACK_TYPE	unsigned portCHAR
 #define portBASE_TYPE	char
 
-typedef portSTACK_TYPE StackType_t;
-typedef signed char BaseType_t;
-typedef unsigned char UBaseType_t;
-
 #if( configUSE_16_BIT_TICKS == 1 )
-	typedef uint16_t TickType_t;
-	#define portMAX_DELAY ( TickType_t ) 0xffff
+	typedef unsigned portSHORT portTickType;
+	#define portMAX_DELAY ( portTickType ) 0xffff
 #else
-	typedef uint32_t TickType_t;
-	#define portMAX_DELAY ( TickType_t ) 0xffffffffUL
+	typedef unsigned portLONG portTickType;
+	#define portMAX_DELAY ( portTickType ) 0xffffffff
 #endif
-/*-----------------------------------------------------------*/
+/*-----------------------------------------------------------*/	
 
 /* Critical section management. */
 #define portENTER_CRITICAL()		asm volatile ( "in		__tmp_reg__, __SREG__" :: );	\
@@ -85,7 +107,7 @@ typedef unsigned char UBaseType_t;
 
 /* Architecture specifics. */
 #define portSTACK_GROWTH			( -1 )
-#define portTICK_PERIOD_MS			( ( TickType_t ) 1000 / configTICK_RATE_HZ )
+#define portTICK_RATE_MS			( ( portTickType ) 1000 / configTICK_RATE_HZ )		
 #define portBYTE_ALIGNMENT			1
 #define portNOP()					asm volatile ( "nop" );
 /*-----------------------------------------------------------*/

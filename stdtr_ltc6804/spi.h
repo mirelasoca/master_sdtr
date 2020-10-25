@@ -8,8 +8,11 @@
 
 #ifndef SPI_H_
 #define SPI_H_
-
-#include<avr/io.h>
+#include "main_config.h"
+#include <avr/io.h>
+#include "main_defines.h"
+#include "main_mcu_init.h"
+#include "main_func.h"
 
 #define DDR_SPI DDRB
 #define DD_MOSI PB2
@@ -23,7 +26,7 @@
 
 void SPI_returnMaster(void);
 void SPI_MasterInit(void);
-char SPI_MasterTransfer(char cData);
+uint8_t SPI_MasterTransfer(uint8_t cData);
 char SPI_SlaveReceive(void);
 void SPI_SStoggle(void);
 void SPI_MasterDisable(void);

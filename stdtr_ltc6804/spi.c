@@ -23,14 +23,17 @@ void SPI_MasterDisable(void)
 {
 	SPCR &= ~ (1<<SPE);
 }
-char SPI_MasterTransfer(char cData)
+uint8_t SPI_MasterTransfer(uint8_t cData)
 {
 	/* Start transmission */
 	SPDR = cData;
 	/* Wait for transmission complete */
 	while(!(SPSR & (1<<SPIF)))
 	;
-	return SPDR;
+	uint8_t my_SDPR = SPDR;
+	sprintf(txMessage, "\n\r\n\rSPI received value is: %u \n\r>>", my_SDPR);
+	abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
+	return my_SDPR;
 }
 char SPI_SlaveReceive(void)
 {
