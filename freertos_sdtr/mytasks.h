@@ -8,8 +8,13 @@
 
 #ifndef MYTASKS_H_
 #define MYTASKS_H_
-
+uint8_t i2c_rcells[8];
+uint8_t i2c_discells[8];
+uint8_t i2c_nodis[8];
 void vLEDFlashTask( void *pvParameters );
 void vButtonCheckTask( void *pvParameters );
 void vLCDUpdateTask( void *pvParameters );
+void vLTCupdateDischarge( void *pvParameters );
+void vLTCreadCells( void *pvParameters );
+void vLTCsendDischarge( void *pvParameters );
 #endif /* MYTASKS_H_ */

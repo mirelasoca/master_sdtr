@@ -80,8 +80,9 @@ portSHORT main(void)
 	
 	while(1)
 	{
-		twi_slaveTransmit(i2c, 8);
-		twi_slaveReceive(receive, 8);
+		i2c[0] =0;
+		twi_masterTransmit(i2c, 8);
+		twi_masterReceive(receive, 8);
 		for(int i= 0;i<8; i+=2)
 		{
 			cell = (uint16_t)(receive[i+1]<<8);
@@ -89,10 +90,12 @@ portSHORT main(void)
 			snprintf(welcomeln1, 15, "RX: %-11X", cell);
 			//lcd_write_instruction(lcd_cmd_clear_display());
 			lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
-			_delay_ms(500);
+			_delay_ms(100);
 		}
 		//processConsoleComm(&serialCom0);
 		_delay_ms(200);
+		i2c[0] =2;
+		twi_masterTransmit(i2c, 8);
 		//twi_slaveReceive(receive, 8);
 	}
 	return 0;

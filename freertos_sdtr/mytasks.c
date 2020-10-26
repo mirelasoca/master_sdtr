@@ -12,11 +12,16 @@
 #include "LED.h"
 #include "button.h"
 #include "driver_lcd.h"
+#include "ltc6804.h"
+#include "twi.h"
 #include "mytasks.h"
 #include "freertosm128.h"
 #include "mytasks.h"
 
-
+bool ON = false;
+uint8_t i2c_discells[8]= {0};
+uint8_t i2c_nodis[8]= {0};
+uint8_t i2c_rcells[8]= {0};
 
 /*
 lcd_params my_params =
@@ -35,6 +40,97 @@ lcd_params my_params =
 	.lcd_shift_cursor = LCD_SHIFT_CURSOR_RIGHT,
 	.lcd_shift_display = LCD_NO_SHIFT_DISPLAY,
 };*/
+void vLTCreadCells( void *pvParameters )
+{
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 100;
+	xLastWakeTime=xTaskGetTickCount();
+	for( ;; )
+	{
+		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
+		//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
+		
+			twi_masterReceive(i2c_rcells, 8);
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	}
+	
+}
+void vLTCsendDischarge( void *pvParameters )
+{
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 1000;
+	xLastWakeTime=xTaskGetTickCount();
+	
+	for( ;; )
+	{
+		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
+		//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
+		ON ^=1;
+		if(ON)
+		{
+			twi_masterTransmit(i2c_discells, 8);
+		}
+		else
+		{
+			twi_masterTransmit(i2c_nodis, 8);
+		}
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	}
+	
+}
+void vLTCupdateDischarge( void *pvParameters )
+{
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 100;
+	xLastWakeTime=xTaskGetTickCount();
+	
+	for( ;; )
+	{
+		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
+		//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
+		for(int i= 0;i<8; i+=2)
+		{
+			vcells[i] = (uint16_t)(i2c_rcells[i+1]<<8);
+			vcells[i] |= (i2c_rcells[i]);
+		}
+		calculate_min();
+		if((cell2!=vref) && (vcells[cell2]+50 <vcells[vref]) &&(vcells[cell2]>33000))
+		{
+			i2c_discells[0] |= (1<<1);
+		}
+		else
+		{
+			i2c_discells[0] &= ~(1<<1);
+		}
+		if((cell3!=vref) && (vcells[cell3]+50 <vcells[vref]) &&(vcells[cell3]>33000))
+		{
+			i2c_discells[0] |= (1<<2);
+		}
+		else
+		{
+			i2c_discells[0] &= ~(1<<2);
+		}
+		if((cell7!=vref) && (vcells[cell7]+50 <vcells[vref]) &&(vcells[cell7]>33000))
+		{
+			i2c_discells[0] |= (1<<6);
+		}
+		else
+		{
+			i2c_discells[0] &= ~(1<<6);
+		}
+		if((cell8!=vref) && (vcells[cell8]+50 <vcells[vref]) &&(vcells[cell8]>33000))
+		{
+			i2c_discells[0] |= (1<<7);
+		}
+		else
+		{
+			i2c_discells[0] &= ~(1<<7);
+		}
+		
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	}
+}
+	
 void vLEDFlashTask( void *pvParameters )
 {
 vLEDInit();
