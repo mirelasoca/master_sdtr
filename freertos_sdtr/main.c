@@ -13,8 +13,8 @@
 #include "task.h"
 #include "mytasks.h"
 #include "freertosm128.h"
-
-
+#include "twi.h"
+#include <stdio.h>
 /* Priority definitions for most of the tasks in the demo application.  Some
 tasks just use the idle priority. */
 #define mainLED_TASK_PRIORITY			( tskIDLE_PRIORITY )
@@ -24,6 +24,10 @@ tasks just use the idle priority. */
 #include "LED.h"
 #include "driver_lcd.h"
 xSemaphoreHandle xButtonSemaphore=NULL;
+
+uint8_t i2c[9]= {11, 22, 33, 44, 55, 66, 77, 88, 99};
+uint8_t receive[9]= {0, 0, 0, 0, 0, 0, 0 , 0, 0};
+uint16_t cell = 0;	
 portSHORT main(void)
 {
 	char welcomeln1[16] ="FreeRTOS DEMO";
@@ -48,12 +52,13 @@ portSHORT main(void)
 
 	lcd_init(&my_params);
 	lcd_blink();
-	lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
+	//lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
 	lcd_write_text(buttonln1, 0, LCD_LINE_COUNT_2);
 	lcd_write_text(tasksln1, 7, LCD_LINE_COUNT_2);
 	//sprintf(txMessage, "\n\r\n\rBasic console v.0.0.1\n\r>>");
 	//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
-	vSemaphoreCreateBinary(xButtonSemaphore);
+	//vSemaphoreCreateBinary(xButtonSemaphore);
+/*
 	if(xButtonSemaphore!=NULL)
 	{
 		//successfully created
@@ -64,11 +69,31 @@ portSHORT main(void)
 	lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
 	//
 	//start scheduler
-	vTaskStartScheduler();
+	vTaskStartScheduler();*/
 	//you should never get here
+	twi_init();
+	//twi_slaveTransmit(i2c, 8);
+	
+	lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
+	
+
+	
 	while(1)
 	{
+		twi_slaveTransmit(i2c, 8);
+		twi_slaveReceive(receive, 8);
+		for(int i= 0;i<8; i+=2)
+		{
+			cell = (uint16_t)(receive[i+1]<<8);
+			cell |= (receive[i]);
+			snprintf(welcomeln1, 15, "RX: %-11X", cell);
+			//lcd_write_instruction(lcd_cmd_clear_display());
+			lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
+			_delay_ms(500);
+		}
 		//processConsoleComm(&serialCom0);
+		_delay_ms(200);
+		//twi_slaveReceive(receive, 8);
 	}
 	return 0;
 }
