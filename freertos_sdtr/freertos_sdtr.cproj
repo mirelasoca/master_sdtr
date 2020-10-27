@@ -178,12 +178,6 @@
     <Compile Include="Drivers\ltc6804.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Drivers\spi.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Drivers\spi.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Drivers\twi.c">
       <SubType>compile</SubType>
     </Compile>

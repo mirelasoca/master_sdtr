@@ -21,10 +21,11 @@
 
 bool ON = false;
 uint8_t i2c_discells[8]= {0};
-uint8_t i2c_nodis[8]= {0};
+const uint8_t i2c_nodis[8]= {0};
 uint8_t i2c_rcells[10]= {0};
 uint8_t txtt[16]= {0};
 	
+/*
 	void printmyballs(const uint8_t *data, size_t len)
 	{
 		int i = 0;
@@ -35,6 +36,7 @@ uint8_t txtt[16]= {0};
 			lcd_write_text(t, 2 * i, LCD_LINE_COUNT_1);
 		}
 	}
+*/
 
 /*
 lcd_params my_params =
@@ -63,8 +65,8 @@ void vLTCreadCells( void *pvParameters )
 	{
 		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
 		//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
-		//if( xMutexu != NULL )
-		if(1)
+		if( xMutexu != NULL )
+		//if(1)
 		{
         /* See if we can obtain the semaphore.  If the semaphore is not
         available wait 10 ticks to see if it becomes free. */
@@ -85,11 +87,7 @@ void vLTCreadCells( void *pvParameters )
 			xSemaphoreGive(xMutexu);
 			//printmyballs(i2c_rcells, 8);
 			}
-		
-			
-				
-		
-		
+	
 					
 		}
 		vTaskDelayUntil(&xLastWakeTime,xFrequency);
@@ -99,15 +97,16 @@ void vLTCreadCells( void *pvParameters )
 void vLTCsendDischarge( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 300;
+	const portTickType xFrequency = 250;
 	xLastWakeTime=xTaskGetTickCount();
-	//i2c_discells[0] = 4;
+	//i2c_discells[0] = (1<<7);
 	for( ;; )
 	{
 		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
 		//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
 		if( xMutexu != NULL )
 		{
+			//i2c_discells[0] ^= (1<<6);
         /* See if we can obtain the semaphore.  If the semaphore is not
         available wait 10 ticks to see if it becomes free. */
          if( xSemaphoreTake( xMutexu, (portTickType ) 0) == pdTRUE )
@@ -115,14 +114,16 @@ void vLTCsendDischarge( void *pvParameters )
 				ON ^=1;
 				if(ON)
 				{
+					
 					twi_masterTransmit(i2c_discells, 8);
+					
 				}
 				else
 				{
 				twi_masterTransmit(i2c_nodis, 8);
 				}
-				//lcd_write_text("got it D", 0, LCD_LINE_COUNT_1);
-				lcd_write_text("sent", 6, LCD_LINE_COUNT_2);
+			/*	snprintf(txtt,5,"conf %u", i2c_discells[0]);
+				lcd_write_text(txtt, 0, LCD_LINE_COUNT_1);*/
 				xSemaphoreGive(xMutexu);
 		 }
 		
@@ -132,92 +133,51 @@ void vLTCsendDischarge( void *pvParameters )
 	
 	
 }
+
 void vLTCupdateDischarge( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 100;
+	const portTickType xFrequency = 70;
 	xLastWakeTime=xTaskGetTickCount();
+	int i = 0;
 	
 	for( ;; )
 	{
 		if( xMutexu != NULL )
 		{
+			i ^=1;
         /* See if we can obtain the semaphore.  If the semaphore is not
         available wait 10 ticks to see if it becomes free. */
         if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
         {
+			
 			for(int i= 0;i<8; i+=2)
 			{
-				vcells[i] = (uint16_t)(i2c_rcells[i]<<8);
-				vcells[i] |= (i2c_rcells[i+1]);
-				snprintf(txtt, 10, "%u", vcells[i]);
-				//lcd_write_text(txtt, 0, LCD_LINE_COUNT_2);
-				//_delay_ms(100);
+				
+				vcells[i] = (uint16_t)(i2c_rcells[i]<<8)|(i2c_rcells[i+1]);
+				//vcells[i] |= (i2c_rcells[i+1]);
+				//i2c_discells[0] = (1<<1)|(1<<7);
+				
 			}
 			calculate_min();
-			xSemaphoreGive(xMutexu);
-		}
+		xSemaphoreGive(xMutexu);}
+			if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
+			{
+				i2c_discells[0] =(1<<1)|((vcells[cell3]-10 > vcells[vref])<<2)|((vcells[cell7]-10> vcells[vref])<<6)|((vcells[cell8]-10> vcells[vref])<<7);
+			xSemaphoreGive(xMutexu);}
+		/*	calculate_min();
+			//i2c_discells[0] = (1<<2)|(1<<7);
+			/ *snprintf(txtt, 10, "vref %u", vcells[vref]);
+			lcd_write_text(txtt, 0, LCD_LINE_COUNT_1);* /
 			
-			if((cell2!=vref) && (vcells[cell2]-10 >vcells[vref]) &&(vcells[cell2]>33000))
-			//if(1)
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] |= (1<<1);
-				xSemaphoreGive(xMutexu);}
-			}
-			else
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] &= ~(1<<1);
-				xSemaphoreGive(xMutexu);}
-			}
-			if((cell3!=vref) && (vcells[cell3]-10 >vcells[vref]) &&(vcells[cell3]>33000))
-			//if(1)
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] |= (1<<2);
-				xSemaphoreGive(xMutexu);}
-			}
-			else
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] &= ~(1<<2);
-				xSemaphoreGive(xMutexu);}
-			}
-			if((cell7!=vref) && (vcells[cell7]-10 >vcells[vref]) &&(vcells[cell7]>33000))
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] |= (1<<6);
-				xSemaphoreGive(xMutexu);}
-			}
-			else
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] &= ~(1<<6);
-				xSemaphoreGive(xMutexu);}
-			}
-			if((cell8!=vref) && (vcells[cell8]-10 >vcells[vref]) &&(vcells[cell8]>33000))
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] |= (1<<7);
-				xSemaphoreGive(xMutexu);}
-			}
-			else
-			{
-				if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
-				{
-				i2c_discells[0] &= ~(1<<7);
-				xSemaphoreGive(xMutexu);}
-			}
-			//lcd_write_text("got it A", 0, LCD_LINE_COUNT_1);
-		
+		if( xSemaphoreTake( xMutexV, (portTickType ) 0 ) == pdTRUE )
+		{
+			calculate_min();
+			i2c_discells[0] = (1<<1)|(1<<7);
+			xSemaphoreGive(xMutexV);
+		}
+		*/
+			
 		}
 		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}

@@ -11,7 +11,7 @@
 
 extern xSemaphoreHandle xButtonSemaphore;
 extern xSemaphoreHandle xMutexu;
-extern xSemaphoreHandle xMutexLCD;
+extern xSemaphoreHandle xMutexV;
 
 
 

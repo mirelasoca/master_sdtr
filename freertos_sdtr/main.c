@@ -27,7 +27,8 @@ tasks just use the idle priority. */
 #include "driver_lcd.h"
 xSemaphoreHandle xButtonSemaphore=NULL;
 xSemaphoreHandle xMutexu = NULL;
-xSemaphoreHandle xMutexLCD = NULL;
+xSemaphoreHandle xMutexV = NULL;
+
 
 uint8_t i2c[9]= {11, 22, 33, 44, 55, 66, 77, 88, 99};
 uint8_t receive[9]= {0, 0, 0, 0, 0, 0, 0 , 0, 0};
@@ -64,7 +65,8 @@ portSHORT main(void)
 	//abtSerTransmitData(&serialCom0, (uint8_t *)txMessage, strlen(txMessage), true, true);
 	vSemaphoreCreateBinary(xButtonSemaphore);
 	xMutexu = xSemaphoreCreateMutex();
-	xMutexLCD = xSemaphoreCreateMutex();
+	xMutexV = xSemaphoreCreateMutex();
+	//xMutexM = xSemaphoreCreateMutex();
 /*
 
 	if(xButtonSemaphore!=NULL)
@@ -76,7 +78,7 @@ portSHORT main(void)
 	xTaskCreate( vLCDUpdateTask, ( signed char * ) "LCD", configMINIMAL_STACK_SIZE, NULL, mainLCD_TASK_PRIORITY, NULL );
 	*/
 	//lcd_write_text(welcomeln1, 0, LCD_LINE_COUNT_1);
-	if((xMutexu!= NULL)&&(xMutexLCD!=NULL))
+	if((xMutexu!= NULL)&&(xMutexV!= NULL))
 	{
 		//snprintf(welcomeln1, 15, "MUTEXU");
 		lcd_write_text("MUTEX", 9, LCD_LINE_COUNT_1);

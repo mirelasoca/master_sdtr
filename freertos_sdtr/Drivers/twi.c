@@ -26,7 +26,7 @@ void printmyballs(const uint8_t *data, size_t len)
 		snprintf(t, 3, "%d", data[i]);
 		lcd_write_text(t, 2 * i, LCD_LINE_COUNT_1);
 	}
-}*/
+}
 
 void twi_slaveTransmit( uint8_t* data, size_t len)
 {
@@ -158,7 +158,7 @@ void twi_slaveReceive(uint8_t* rdata, size_t lenr)
 	protocol_error:
 	lcd_write_text("DIE", 12, LCD_LINE_COUNT_2);
 }
-
+*/
 int twi_masterTransmit( uint8_t* data, size_t len)
 {
 	int i = 0;
@@ -175,7 +175,7 @@ int twi_masterTransmit( uint8_t* data, size_t len)
 
 	while (progress)
 	{
-		//_delay_ms(500);
+		//_delay_ms(200);
 		while (!(TWCR & (1<<TWINT)));
 		
 		volatile unsigned int status = TWSR;
@@ -236,8 +236,10 @@ int twi_masterTransmit( uint8_t* data, size_t len)
 	
 	protocol_error:
 	lcd_write_text("DIE", 12, LCD_LINE_COUNT_2);
+	return 1;
 }
 
+/*
 
 int twi_masterReceiveMirela(uint8_t* rdata, size_t lenr)
 {
@@ -337,6 +339,7 @@ int twi_masterReceiveMirela(uint8_t* rdata, size_t lenr)
 	return 1;
 	
 }
+*/
 
 int twi_masterReceive(uint8_t* rdata, size_t lenr)
 {
@@ -357,51 +360,51 @@ int twi_masterReceive(uint8_t* rdata, size_t lenr)
 		{
 			case TW_START:
 			case TW_REP_START:
-				if (i > 0 && status != TW_REP_START)
-				{
-					TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-					return i + 20;
-				}
+			if (i > 0 && status != TW_REP_START)
+			{
+				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+				return i + 20;
+			}
 
-				lcd_write_text("START", 12, LCD_LINE_COUNT_2);
-				TWDR = (24 << 1) + 1;
-				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
-				break;
+			lcd_write_text("START", 12, LCD_LINE_COUNT_2);
+			TWDR = (24 << 1) + 1;
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
+			break;
 			case TW_MR_SLA_NACK:
-				lcd_write_text("NSLA", 12, LCD_LINE_COUNT_2);
-				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-				return 5;
+			lcd_write_text("NSLA", 12, LCD_LINE_COUNT_2);
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+			return 5;
 			case TW_MR_SLA_ACK:
-				lcd_write_text("SLA ", 12, LCD_LINE_COUNT_2);
-				if (i != 0)
-				{
-					TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-					return i + 10;
-				}
-				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
-				break;
+			lcd_write_text("SLA ", 12, LCD_LINE_COUNT_2);
+			if (i != 0)
+			{
+				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+				return i + 10;
+			}
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
+			break;
 			case TW_MR_DATA_ACK:
-				snprintf(txt, 7, "ACK%1d", i);
-				lcd_write_text(txt, 10, LCD_LINE_COUNT_2);
-				if (i > lenr)
-				{
-					TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-					return i + 30;
-				}
+			snprintf(txt, 7, "ACK%1d", i);
+			lcd_write_text(txt, 10, LCD_LINE_COUNT_2);
+			if (i > lenr)
+			{
+				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+				return i + 30;
+			}
 
-				rdata[i++] = TWDR;
-				TWCR = (1 << TWINT) | (1 << TWEN) | (i == lenr ? 0 : (1 << TWEA));
-				break;
+			rdata[i++] = TWDR;
+			TWCR = (1 << TWINT) | (1 << TWEN) | (i == lenr ? 0 : (1 << TWEA));
+			break;
 			case TW_MR_DATA_NACK:
-				lcd_write_text("RNAK", 12, LCD_LINE_COUNT_2);
-				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-				if (i >= lenr)
-					return 0;
-				return 2;
+			lcd_write_text("RNAK", 12, LCD_LINE_COUNT_2);
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+			if (i >= lenr)
+			return 0;
+			return 2;
 			default:
-				lcd_write_text("RERR ", 12, LCD_LINE_COUNT_2);
-				TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
-				return 3;
+			lcd_write_text("RERR ", 12, LCD_LINE_COUNT_2);
+			TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+			return 3;
 		}
 	}
 	
