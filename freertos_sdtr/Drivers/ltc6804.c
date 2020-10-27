@@ -237,9 +237,9 @@ unsigned int calculate_voltage( uint8_t reg1, uint8_t reg2) {
 }
 
 void calculate_min(void){
-	vmin= vcells[cell2]<vcells[cell3-1]?vcells[cell2-1]:vcells[cell3-1]; //
-	vmin= vcells[cell7]<vmin? vcells[cell7-1]:vmin;
-	vmin= vcells[cell8]<vmin?vcells[cell8-1]:vmin;
+	vmin= vcells[cell2]<vcells[cell3]?vcells[cell2]:vcells[cell3]; //
+	vmin= vcells[cell7]<vmin? vcells[cell7]:vmin;
+	vmin= vcells[cell8]<vmin?vcells[cell8]:vmin;
 	if(vcells[cell8]==vmin)
 		vref=cell8;
 	if(vcells[cell7]==vmin)

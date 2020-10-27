@@ -10,7 +10,8 @@
 #define FREERTOSM128_H_
 
 extern xSemaphoreHandle xButtonSemaphore;
-
+extern xSemaphoreHandle xMutexu;
+extern xSemaphoreHandle xMutexLCD;
 
 
 

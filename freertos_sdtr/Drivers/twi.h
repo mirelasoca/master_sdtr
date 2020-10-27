@@ -22,8 +22,8 @@ void twi_init(void);
 void twi_slaveTransmit( uint8_t * data, size_t len);
 void twi_slaveReceive(uint8_t* rdata, size_t lenr);
 
-void twi_masterTransmit( uint8_t * data, size_t len);
-void twi_masterReceive(uint8_t* rdata, size_t lenr);
+int twi_masterTransmit( uint8_t * data, size_t len);
+int twi_masterReceive(uint8_t* rdata, size_t lenr);
 
 
 #endif /* TWI_H_ */
