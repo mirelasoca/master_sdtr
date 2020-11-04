@@ -20,6 +20,7 @@
 #include "mytasks.h"
 
 bool ON = false;
+uint8_t cfgg4;
 uint8_t i2c_discells[8]= {0};
 const uint8_t i2c_nodis[8]= {0};
 uint8_t i2c_rcells[10]= {0};
@@ -99,7 +100,7 @@ void vLTCsendDischarge( void *pvParameters )
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 250;
 	xLastWakeTime=xTaskGetTickCount();
-	//i2c_discells[0] = (1<<7);
+	set_config((config_message_t*)i2c_nodis, 0);
 	for( ;; )
 	{
 		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
@@ -163,7 +164,8 @@ void vLTCupdateDischarge( void *pvParameters )
 		xSemaphoreGive(xMutexu);}
 			if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
 			{
-				i2c_discells[0] =(1<<1)|((vcells[cell3]-10 > vcells[vref])<<2)|((vcells[cell7]-10> vcells[vref])<<6)|((vcells[cell8]-10> vcells[vref])<<7);
+			  cfgg4 =((vcells[cell2]-50 > vcells[vref])<<1)|((vcells[cell3]-50 > vcells[vref])<<2)|((vcells[cell7]-50> vcells[vref])<<6)|((vcells[cell8]-50> vcells[vref])<<7);
+			  set_config((config_message_t*)i2c_discells, cfgg4);
 			xSemaphoreGive(xMutexu);}
 		/*	calculate_min();
 			//i2c_discells[0] = (1<<2)|(1<<7);

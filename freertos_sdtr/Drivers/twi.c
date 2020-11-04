@@ -17,16 +17,7 @@ void twi_init(void)
 	
 }
 /*
-void printmyballs(const uint8_t *data, size_t len)
-{
-	int i = 0;
-	for (i = 0; i < len; i++)
-	{
-		char t[3];
-		snprintf(t, 3, "%d", data[i]);
-		lcd_write_text(t, 2 * i, LCD_LINE_COUNT_1);
-	}
-}
+
 
 void twi_slaveTransmit( uint8_t* data, size_t len)
 {
@@ -36,7 +27,7 @@ void twi_slaveTransmit( uint8_t* data, size_t len)
 	lcd_write_text("TTWI", 12, LCD_LINE_COUNT_2);
 	int progress = 1;
 	
-	//printmyballs(data, len);
+	// 
 	
 	char txt[7];
 
@@ -84,7 +75,7 @@ void twi_slaveTransmit( uint8_t* data, size_t len)
 	}
 	TWCR |= (1<<TWSTO);
 	
-	//printmyballs(data, len);
+	// 
 	return;
 	
 protocol_error:
@@ -100,7 +91,7 @@ void twi_slaveReceive(uint8_t* rdata, size_t lenr)
 	lcd_write_text("RTWI", 12, LCD_LINE_COUNT_2);
 	int progress = 1;
 	
-	//printmyballs(data, len);
+	// 
 	
 	char txt[7];
 
@@ -152,7 +143,7 @@ void twi_slaveReceive(uint8_t* rdata, size_t lenr)
 	}
 	TWCR |= (1<<TWSTO);
 	
-	//printmyballs(data, len);
+	// 
 	return;
 	
 	protocol_error:
@@ -162,14 +153,14 @@ void twi_slaveReceive(uint8_t* rdata, size_t lenr)
 int twi_masterTransmit( uint8_t* data, size_t len)
 {
 	int i = 0;
-	int j = 0;
+
 	lcd_write_text("TTWI", 12, LCD_LINE_COUNT_2);
 	int progress = 1;
 	TWCR = (1<<TWEN)|(1<<TWSTA)|(1<<TWINT);
 	
 	
 	
-	//printmyballs(data, len);
+	// 
 	
 	char txt[7];
 
@@ -195,7 +186,8 @@ int twi_masterTransmit( uint8_t* data, size_t len)
 			break;
 			case TW_MT_SLA_NACK:
 			lcd_write_text("NSLA", 12, LCD_LINE_COUNT_2);
-			j= -1;
+			//
+			// -1;
 			TWCR= (1<<TWSTA)|(1 << TWINT)|(1<<TWEN); //restart transm
 			return 1;
 			break;
@@ -214,7 +206,7 @@ int twi_masterTransmit( uint8_t* data, size_t len)
 			lcd_write_text("NAK ", 12, LCD_LINE_COUNT_2);
 			if (i >= len-1)
 			progress = 0;
-			j= -1;
+			//j= -1;
 			TWCR= (1<<TWSTA)|(1 << TWINT)|(1<<TWEN); //restart transm
 			return 1;
 			break;
@@ -231,7 +223,7 @@ int twi_masterTransmit( uint8_t* data, size_t len)
 	}
 
 	
-	//printmyballs(data, len);
+	// 
 	return 0;
 	
 	protocol_error:
@@ -250,7 +242,7 @@ int twi_masterReceiveMirela(uint8_t* rdata, size_t lenr)
 	lcd_write_text("RTWI", 12, LCD_LINE_COUNT_2);
 	int progress = 1;
 	
-	//printmyballs(data, len);
+	// 
 	
 	char txt[7];
 
@@ -327,7 +319,7 @@ int twi_masterReceiveMirela(uint8_t* rdata, size_t lenr)
 	}
 	
 	
-	printmyballs(rdata, lenr);
+	//(rdata, lenr);
 	return 0;
 	
 	protocol_error:
@@ -348,7 +340,7 @@ int twi_masterReceive(uint8_t* rdata, size_t lenr)
 	TWCR = (1 << TWEN) | (1 << TWSTA) | (1 << TWINT);
 	lcd_write_text("RTWI", 12, LCD_LINE_COUNT_2);
 	
-	// printmyballs(rdata, lenr);
+	// //(rdata, lenr);
 	
 	char txt[7];
 
@@ -408,6 +400,6 @@ int twi_masterReceive(uint8_t* rdata, size_t lenr)
 		}
 	}
 	
-	//printmyballs(data, len);
+	// 
 	return 0;
 }

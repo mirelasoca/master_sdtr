@@ -14,7 +14,7 @@
 #include <util/delay.h>
 
 #include <stdbool.h>
-unsigned int vcells[4];
+signed int vcells[4];
  /*#define  CMD0_RDSTATA  0b10000000
  #define CMD1_RDSTATA  0b00010000
  #define CMD0_RDCVA  0b10000000
@@ -67,6 +67,7 @@ uint8_t RDSTATA[4];
 uint8_t RDCVA[4];
 uint8_t RDCVC[4];*/
 unsigned int vref;
+signed int vmin;
 
 typedef enum MEASURE {
 	allcells,
@@ -133,9 +134,10 @@ typedef enum command_type {
 	RDCVAt,
 	RDCVCt,
 	}command_type_t;
+void set_config( config_message_t * config, uint8_t cfg4);
 /*
 void set_command(command_message_t * command, command_type_t c_type);
-void set_config( config_message_t * config, CELL_DISCHARGE_t cells, TIMEOUT_t mins);	
+	
 void write_read(config_message_t* config, command_message_t* command, uint8_t* data_read );
 void write_read_config(CELL_DISCHARGE_t cells, TIMEOUT_t mins , PECFG_t pec ) ;
 void adcv(MEASURE_t cell);
@@ -143,6 +145,6 @@ void wakeup(void);
 void readstat(uint8_t *READ, uint8_t* data_read);
 unsigned int calculate_voltage( uint8_t reg1, uint8_t reg2);*/
 void calculate_min(void);
-/*uint16_t calculate_pec(uint8_t* datagram, uint8_t dimension);*/
+uint16_t calculate_pec(uint8_t* datagram, uint8_t dimension);
 
 #endif /* LTC6804_H_ */

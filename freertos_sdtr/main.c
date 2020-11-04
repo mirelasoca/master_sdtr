@@ -35,9 +35,7 @@ uint8_t receive[9]= {0, 0, 0, 0, 0, 0, 0 , 0, 0};
 uint16_t cell = 0;	
 portSHORT main(void)
 {
-	char welcomeln1[16] ="FreeRTOS DEMO";
-	char buttonln1[16]="BT:";
-	char tasksln1[16] ="TSKS:";
+	
 	lcd_params my_params =
 	{
 		.data_port = &PORTC,

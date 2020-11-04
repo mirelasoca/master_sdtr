@@ -6,6 +6,10 @@
  */ 
 #include "ltc6804.h"
 //#include <stdbool.h>
+const uint8_t CFGR0 = 0b00000110;
+const uint8_t CFGR1 = 0b01010010;
+const uint8_t CFGR2 = 0b10000111;
+const uint8_t CFGR3 = 0b10111011;
 /*
 const  uint8_t PEC0_WRCFG = 0b01001101;
 const  uint8_t PEC1_WRCFG = 0b01111010;
@@ -15,10 +19,7 @@ const uint8_t PEC1_RDCFG=0b00011110;
 const uint8_t PEC0_WRCFG0 = 0b00111101;
 const uint8_t PEC1_WRCFG0 = 0b01101110;
 //const uint16_t PECW = 0b0011110101101110;
-const uint8_t CFGR0 = 0b00000110;
-const uint8_t CFGR1 = 0b01010010;
-const uint8_t CFGR2 = 0b10000111;
-const uint8_t CFGR3 = 0b10111011;
+
 const uint8_t CFGR4[7]={0x00, 0b00000010,0b00000100,0b01000000,0b10000000,0b11000000, 0b00000110};
 const uint8_t CFGR5[3]= {0x00,0b00010000, 0b00100000};
 //const uint8_t PEC0_CFG[15] = {0b11110000,0b00110000,0b00010111,0b10010011, 0b11011011, 0b10001100, 0b11100011,0b11011101, 0b11111010, 0b01111110,0b00110110, 0b01100001,0b00001110};
@@ -29,9 +30,22 @@ const uint8_t PEC0_ADCV1[4] ={ 0b10000100, 0b00001111, 0b00011001, 0b10010010 };
 const uint8_t PEC1_ADCV1[4] = {0b01111000, 0b01001010, 0b00101110, 0b00011100};
 */
 
-uint16_t vcells[4]={0,0,0,0};
+signed int vcells[4]={0,0,0,0};
 
-unsigned int vmin=0;
+signed int vmin=0;
+void set_config(config_message_t * config, uint8_t cfg4)
+{
+	config->asStruct.cfgr0= CFGR0;
+	config->asStruct.cfgr1= CFGR1;
+	config->asStruct.cfgr2= CFGR2;
+	config->asStruct.cfgr3= CFGR3;
+	config->asStruct.cfgr4= cfg4;
+	config->asStruct.cfgr5= 0b00010000;
+	uint16_t pec = calculate_pec(config->asArray, 6);
+	config->asArray[6] = pec>>8;
+	config->asArray[7] = pec &0xFF;
+
+}
 /*
  const uint8_t CMD0_WRCFG = 0b10000000;
  const uint8_t CMD1_WRCFG = 0b00000001;
@@ -105,22 +119,7 @@ void set_command(command_message_t * command, command_type_t c_type)
 	
 
 }
-void set_config(config_message_t * config, CELL_DISCHARGE_t cells, TIMEOUT_t mins)
-{
-	config->asStruct.cfgr0= CFGR0;
-	config->asStruct.cfgr1= CFGR1;
-	config->asStruct.cfgr2= CFGR2;
-	config->asStruct.cfgr3= CFGR3;
-	config->asStruct.cfgr4= CFGR4[cells];
-	config->asStruct.cfgr5= CFGR5[mins];
-	uint16_t pec = calculate_pec(config->asArray, 6);
-	config->asArray[6] = pec>>8;
-	config->asArray[7] = pec &0xFF;
-	/ *if((config->asStruct.pec>>8)==PEC0_CFG[cell7halfmin])
-	{
-		PORTB|=(1<<7);
-	}* /
-}
+
 void write_read(config_message_t* config, command_message_t* command, uint8_t* data_read )
 {
 	SPI_PORT &= ~(1<<pin_SS);
@@ -241,6 +240,16 @@ unsigned int calculate_voltage( uint8_t reg1, uint8_t reg2) {
 }*/
 
 void calculate_min(void){
+	vmin = vcells[cell2];
+	vref = 0;
+	for(int i=1; i<4;i++)
+	{
+		if(vcells[i]<vmin)
+		{
+			vref =i;
+		}
+	}
+/*
 	vmin= vcells[cell2]<vcells[cell3]?vcells[cell2]:vcells[cell3]; //
 	vmin= vcells[cell7]<vmin? vcells[cell7]:vmin;
 	vmin= vcells[cell8]<vmin?vcells[cell8]:vmin;
@@ -251,9 +260,9 @@ void calculate_min(void){
 	if(vcells[cell3]==vmin)
 		vref=cell7;
 	if(vcells[cell2]==vmin)
-		vref=cell2;
+		vref=cell2;*/
 } // a -1 is used because the readings of the cells are stored in the array starting at vcells[0] for cell 1 and so on
-/*
+
 uint16_t calculate_pec(uint8_t* datagram, uint8_t dimension)
 {
 	uint8_t byte;
@@ -298,9 +307,6 @@ uint16_t calculate_pec(uint8_t* datagram, uint8_t dimension)
 		pec = pec | PEC[i];
 		pec = pec<<1;
 	}
-	/ *if((pec&0x1)==0)
-	{
-		PORTB|= (1<<7);
-	}* /
+	
 	return pec;
-}*/
+}
