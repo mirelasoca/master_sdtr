@@ -22,22 +22,11 @@
 bool ON = false;
 uint8_t cfgg4;
 uint8_t i2c_discells[8]= {0};
-const uint8_t i2c_nodis[8]= {0};
+uint8_t i2c_nodis[8]= {0};
 uint8_t i2c_rcells[10]= {0};
 uint8_t txtt[16]= {0};
 	
-/*
-	void printmyballs(const uint8_t *data, size_t len)
-	{
-		int i = 0;
-		for (i = 0; i < len; i++)
-		{
-			char t[3];
-			snprintf(t, 3, "%02X", data[i]);
-			lcd_write_text(t, 2 * i, LCD_LINE_COUNT_1);
-		}
-	}
-*/
+
 
 /*
 lcd_params my_params =
@@ -98,9 +87,9 @@ void vLTCreadCells( void *pvParameters )
 void vLTCsendDischarge( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 250;
+	const portTickType xFrequency = 1000;
 	xLastWakeTime=xTaskGetTickCount();
-	set_config((config_message_t*)i2c_nodis, 0);
+	set_config2((config_message_t*)i2c_nodis);
 	for( ;; )
 	{
 		//sprintf(txMessage, "\n\r\LED activated\n\r>>");
@@ -115,17 +104,21 @@ void vLTCsendDischarge( void *pvParameters )
 				ON ^=1;
 				if(ON)
 				{
-					
+					int ret =0;
+					while (ret = twi_masterReceive(i2c_rcells, 8));
 					twi_masterTransmit(i2c_discells, 8);
 					
 				}
 				else
 				{
 				twi_masterTransmit(i2c_nodis, 8);
+				
+				vTaskDelayUntil(&xLastWakeTime, 3*xFrequency);
 				}
 			/*	snprintf(txtt,5,"conf %u", i2c_discells[0]);
 				lcd_write_text(txtt, 0, LCD_LINE_COUNT_1);*/
 				xSemaphoreGive(xMutexu);
+				
 		 }
 		
 	}	
@@ -152,10 +145,10 @@ void vLTCupdateDischarge( void *pvParameters )
         if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
         {
 			
-			for(int i= 0;i<8; i+=2)
+			for(int i= 0;i<4; i++)
 			{
 				
-				vcells[i] = (uint16_t)(i2c_rcells[i]<<8)|(i2c_rcells[i+1]);
+				vcells[i] = (uint16_t)(i2c_rcells[2*i]<<8)|(i2c_rcells[2*i+1]);
 				//vcells[i] |= (i2c_rcells[i+1]);
 				//i2c_discells[0] = (1<<1)|(1<<7);
 				
@@ -164,7 +157,7 @@ void vLTCupdateDischarge( void *pvParameters )
 		xSemaphoreGive(xMutexu);}
 			if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )
 			{
-			  cfgg4 =((vcells[cell2]-50 > vcells[vref])<<1)|((vcells[cell3]-50 > vcells[vref])<<2)|((vcells[cell7]-50> vcells[vref])<<6)|((vcells[cell8]-50> vcells[vref])<<7);
+			  cfgg4 =((vcells[cell2]-3 > vcells[vref])<<1)|((vcells[cell3]-3 > vcells[vref])<<2)|((vcells[cell7]-3> vcells[vref])<<6)|((vcells[cell8]-3> vcells[vref])<<7);
 			  set_config((config_message_t*)i2c_discells, cfgg4);
 			xSemaphoreGive(xMutexu);}
 		/*	calculate_min();

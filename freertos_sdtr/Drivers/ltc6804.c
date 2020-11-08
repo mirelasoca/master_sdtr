@@ -30,7 +30,7 @@ const uint8_t PEC0_ADCV1[4] ={ 0b10000100, 0b00001111, 0b00011001, 0b10010010 };
 const uint8_t PEC1_ADCV1[4] = {0b01111000, 0b01001010, 0b00101110, 0b00011100};
 */
 
-signed int vcells[4]={0,0,0,0};
+float vcells[4]={0,0,0,0};
 
 signed int vmin=0;
 void set_config(config_message_t * config, uint8_t cfg4)
@@ -41,6 +41,19 @@ void set_config(config_message_t * config, uint8_t cfg4)
 	config->asStruct.cfgr3= CFGR3;
 	config->asStruct.cfgr4= cfg4;
 	config->asStruct.cfgr5= 0b00010000;
+	uint16_t pec = calculate_pec(config->asArray, 6);
+	config->asArray[6] = pec>>8;
+	config->asArray[7] = pec &0xFF;
+
+}
+void set_config2(config_message_t * config)
+{
+	config->asStruct.cfgr0= CFGR0;
+	config->asStruct.cfgr1= CFGR1;
+	config->asStruct.cfgr2= CFGR2;
+	config->asStruct.cfgr3= CFGR3;
+	config->asStruct.cfgr4= 0;
+	config->asStruct.cfgr5= 0;
 	uint16_t pec = calculate_pec(config->asArray, 6);
 	config->asArray[6] = pec>>8;
 	config->asArray[7] = pec &0xFF;

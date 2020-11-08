@@ -14,7 +14,7 @@
 #include <util/delay.h>
 
 #include <stdbool.h>
-signed int vcells[4];
+float vcells[4];
  /*#define  CMD0_RDSTATA  0b10000000
  #define CMD1_RDSTATA  0b00010000
  #define CMD0_RDCVA  0b10000000
@@ -135,6 +135,7 @@ typedef enum command_type {
 	RDCVCt,
 	}command_type_t;
 void set_config( config_message_t * config, uint8_t cfg4);
+void set_config2(config_message_t * config);
 /*
 void set_command(command_message_t * command, command_type_t c_type);
 	

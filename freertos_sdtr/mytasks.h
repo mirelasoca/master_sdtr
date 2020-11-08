@@ -10,7 +10,7 @@
 #define MYTASKS_H_
 uint8_t i2c_rcells[10];
 uint8_t i2c_discells[8];
-const uint8_t i2c_nodis[8];
+uint8_t i2c_nodis[8];
 
 uint8_t txtt[16];
 

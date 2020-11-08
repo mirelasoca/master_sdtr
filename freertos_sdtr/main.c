@@ -81,7 +81,7 @@ portSHORT main(void)
 		//snprintf(welcomeln1, 15, "MUTEXU");
 		lcd_write_text("MUTEX", 9, LCD_LINE_COUNT_1);
 	}
-	xTaskCreate( vLTCreadCells, ( signed char * ) "read", configMINIMAL_STACK_SIZE * 2, NULL, mainLTC_TASK_PRIORITY, NULL );
+	//xTaskCreate( vLTCreadCells, ( signed char * ) "read", configMINIMAL_STACK_SIZE * 2, NULL, mainLTC_TASK_PRIORITY, NULL );
 	xTaskCreate( vLTCsendDischarge, ( signed char * ) "discharge", configMINIMAL_STACK_SIZE* 2, NULL, mainLTC_TASK_PRIORITY, NULL );
 	xTaskCreate( vLTCupdateDischarge, ( signed char * ) "algorithm", configMINIMAL_STACK_SIZE* 2, NULL, mainLTC_TASK_PRIORITY, NULL );
 	//start scheduler
