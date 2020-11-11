@@ -30,7 +30,7 @@ const uint8_t PEC0_ADCV1[4] ={ 0b10000100, 0b00001111, 0b00011001, 0b10010010 };
 const uint8_t PEC1_ADCV1[4] = {0b01111000, 0b01001010, 0b00101110, 0b00011100};
 */
 
-float vcells[4]={0,0,0,0};
+signed int vcells[4]={0,0,0,0};
 
 signed int vmin=0;
 void set_config(config_message_t * config, uint8_t cfg4)

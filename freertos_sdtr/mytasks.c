@@ -153,6 +153,12 @@ void vLTCupdateDischarge( void *pvParameters )
 				//i2c_discells[0] = (1<<1)|(1<<7);
 				
 			}
+			vcells[0] -= 339;
+			vcells[1] -= 332;
+			vcells[2] -= 347;
+			vcells[3] -= 356;
+			
+			
 			calculate_min();
 		xSemaphoreGive(xMutexu);}
 			if( xSemaphoreTake( xMutexu, (portTickType ) 0 ) == pdTRUE )

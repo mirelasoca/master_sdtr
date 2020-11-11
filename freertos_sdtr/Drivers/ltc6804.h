@@ -14,7 +14,7 @@
 #include <util/delay.h>
 
 #include <stdbool.h>
-float vcells[4];
+signed int vcells[4];
  /*#define  CMD0_RDSTATA  0b10000000
  #define CMD1_RDSTATA  0b00010000
  #define CMD0_RDCVA  0b10000000
