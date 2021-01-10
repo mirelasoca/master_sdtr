@@ -5,7 +5,7 @@
  *  Author: Mirela
  */ 
 #include "ltc6804.h"
-//#include <stdbool.h>
+//configuration bytes for discharge register
 const uint8_t CFGR0 = 0b00000110;
 const uint8_t CFGR1 = 0b01010010;
 const uint8_t CFGR2 = 0b10000111;
@@ -39,21 +39,22 @@ void set_config(config_message_t * config, uint8_t cfg4)
 	config->asStruct.cfgr1= CFGR1;
 	config->asStruct.cfgr2= CFGR2;
 	config->asStruct.cfgr3= CFGR3;
-	config->asStruct.cfgr4= cfg4;
+	config->asStruct.cfgr4= cfg4; // only config4 determines which cells are discharged
 	config->asStruct.cfgr5= 0b00010000;
-	uint16_t pec = calculate_pec(config->asArray, 6);
+	uint16_t pec = calculate_pec(config->asArray, 6); // pec has to be computed for each case
 	config->asArray[6] = pec>>8;
 	config->asArray[7] = pec &0xFF;
 
 }
+//used only once in the program to update no_discell buffer
 void set_config2(config_message_t * config)
 {
 	config->asStruct.cfgr0= CFGR0;
 	config->asStruct.cfgr1= CFGR1;
 	config->asStruct.cfgr2= CFGR2;
 	config->asStruct.cfgr3= CFGR3;
-	config->asStruct.cfgr4= 0;
-	config->asStruct.cfgr5= 0;
+	config->asStruct.cfgr4= 0; // discharge time set to 0
+	config->asStruct.cfgr5= 0; // no cell discharged 
 	uint16_t pec = calculate_pec(config->asArray, 6);
 	config->asArray[6] = pec>>8;
 	config->asArray[7] = pec &0xFF;
@@ -262,20 +263,9 @@ void calculate_min(void){
 			vref =i;
 		}
 	}
-/*
-	vmin= vcells[cell2]<vcells[cell3]?vcells[cell2]:vcells[cell3]; //
-	vmin= vcells[cell7]<vmin? vcells[cell7]:vmin;
-	vmin= vcells[cell8]<vmin?vcells[cell8]:vmin;
-	if(vcells[cell8]==vmin)
-		vref=cell8;
-	if(vcells[cell7]==vmin)
-		vref=cell7;
-	if(vcells[cell3]==vmin)
-		vref=cell7;
-	if(vcells[cell2]==vmin)
-		vref=cell2;*/
-} // a -1 is used because the readings of the cells are stored in the array starting at vcells[0] for cell 1 and so on
 
+} 
+// calculate packet error code of the datagram
 uint16_t calculate_pec(uint8_t* datagram, uint8_t dimension)
 {
 	uint8_t byte;

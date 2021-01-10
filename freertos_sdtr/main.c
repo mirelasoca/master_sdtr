@@ -30,9 +30,10 @@ xSemaphoreHandle xMutexu = NULL;
 xSemaphoreHandle xMutexV = NULL;
 
 
+/*
 uint8_t i2c[9]= {11, 22, 33, 44, 55, 66, 77, 88, 99};
 uint8_t receive[9]= {0, 0, 0, 0, 0, 0, 0 , 0, 0};
-uint16_t cell = 0;	
+uint16_t cell = 0;*/	
 portSHORT main(void)
 {
 	
@@ -84,6 +85,8 @@ portSHORT main(void)
 	//xTaskCreate( vLTCreadCells, ( signed char * ) "read", configMINIMAL_STACK_SIZE * 2, NULL, mainLTC_TASK_PRIORITY, NULL );
 	xTaskCreate( vLTCsendDischarge, ( signed char * ) "discharge", configMINIMAL_STACK_SIZE* 2, NULL, mainLTC_TASK_PRIORITY, NULL );
 	xTaskCreate( vLTCupdateDischarge, ( signed char * ) "algorithm", configMINIMAL_STACK_SIZE* 2, NULL, mainLTC_TASK_PRIORITY, NULL );
+	//xTaskCreate( vLCDUpdateTask, ( signed char * ) "LCD", configMINIMAL_STACK_SIZE, NULL, mainLCD_TASK_PRIORITY, NULL );
+	xTaskCreate( vButtonCheckTask, ( signed char * ) "Button", configMINIMAL_STACK_SIZE, NULL, mainButton_TASK_PRIORITY, NULL );
 	//start scheduler
 	vTaskStartScheduler();
 	//you should never get here

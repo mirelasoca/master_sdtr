@@ -138,8 +138,8 @@ void setup() {
   SPI.begin();
   SPI.setClockDivider(SPI_CLOCK_DIV8);
   Wire.setClock(100000);
- // Wire.begin(); 
-  //Wire.onReceive(receiveEvent);
+//  Wire.begin(); 
+//  Wire.onReceive(receiveEvent);
 
   Serial.begin(9600);
       delay(500);
@@ -164,8 +164,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   //delay(500);
-  //Wire.onReceive(receiveEvent);
-  //Wire.onRequest(send_i2cData);
+//  Wire.onReceive(receiveEvent);
+//  Wire.onRequest(send_i2cData);
   
 
     
@@ -178,25 +178,25 @@ void loop() {
     
   
 
-//    set_command(&command, WRCFGt);
+   // set_command(&command, WRCFGt);
 //    set_configg(&my_configg, cell8, halfmin);
 //    wakeup();
-//    write_read(&my_configg, &command, 0);
+//    write_read(&my_configg, &W_command, 0);
 //    delay(1000);
 //
 //    set_configg(&my_configg, cell7, halfmin);
 //    wakeup();
-//    write_read(&my_configg, &command, 0);
-//    delay(1000);
-//
-//    set_configg(&my_configg, cell2, halfmin);
-//    wakeup();
-//    write_read(&my_configg, &command, 0);
+//    write_read(&my_configg, &W_command, 0);
 //    delay(1000);
 //
 //    set_configg(&my_configg, cell3, halfmin);
 //    wakeup();
-//    write_read(&my_configg, &command, 0);
+//    write_read(&my_configg, &W_command, 0);
+//    delay(1000);
+//
+//    set_configg(&my_configg, cell2, halfmin);
+//    wakeup();
+//    write_read(&my_configg, &W_command, 0);
 //    delay(1000);
 //
    
@@ -209,9 +209,9 @@ void send_i2cData(void)
    {
     Wire.write(vcells[i]>>8);
     Wire.write(vcells[i]&0xff);
-//    Serial.print("Sending ");
-//    Serial.print(vcells[i], HEX);
-//    Serial.println("...");
+    Serial.print("Sending ");
+    Serial.print(vcells[i]);
+    Serial.println("...");
    }
    //Wire.endTransmission();
 }
@@ -224,8 +224,8 @@ void receiveEvent(int howMany)
   {
     incoming_i2c[i] = Wire.read();
     i++;
-//    Serial.print("Got ");
-//    Serial.println(incoming_i2c[i-1]);
+    Serial.print("Got ");
+    Serial.println(incoming_i2c[i-1]);
   }
   if(incoming_i2c[5] !=0)
   {
@@ -251,13 +251,12 @@ void receiveEvent(int howMany)
     Serial.print(vcells[3]);
     Serial.println(",");
   }
- if((vcells[1]<40200)||(incoming_i2c[5]==0))
-  {
+
   wakeup();
    // write_read(&my_configg, &W_command, 0);
    //incoming_i2c[4] =0;
    write_read((configg_message_t*)incoming_i2c, &W_command, 0); 
-   }
+   
 }
 void set_command(command_message_t * command, command_type_t c_type)
 {
@@ -324,7 +323,7 @@ void set_configg(configg_message_t * configg, uint8_t config4, TIMEOUT_t mins)
   configg->asStruct.cfgr1= CFGR1;
   configg->asStruct.cfgr2= CFGR2;
   configg->asStruct.cfgr3= CFGR3;
-  configg->asStruct.cfgr4= config4;
+  configg->asStruct.cfgr4= CFGR4[config4];
   configg->asStruct.cfgr5= CFGR5[mins];
   uint16_t pec = calculate_pec(configg->asArray, 6);
   configg->asArray[6] = pec>>8;
